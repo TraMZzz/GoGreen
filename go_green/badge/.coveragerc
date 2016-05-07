@@ -1,0 +1,5 @@
+[run]
+include = go_green/*
+omit = *migrations*, *tests*
+plugins =
+    django_coverage_plugin
