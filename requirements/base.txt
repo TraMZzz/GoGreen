@@ -2,6 +2,7 @@
 
 # Bleeding edge Django
 django==1.9.6
+whitenoise==3.0
 
 # Configuration
 django-environ==0.4.0
