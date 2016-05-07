@@ -1,2 +1,2 @@
-web: gunicorn --pythonpath="$PWD/config" wsgi:application
+web: waitress-serve --port=$PORT config.wsgi:application
 
