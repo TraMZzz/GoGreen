@@ -1,48 +1,54 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+import json
 
-from django.core.urlresolvers import reverse
-from django.views.generic import DetailView, ListView, RedirectView, UpdateView
+from django.shortcuts import get_object_or_404
 
-from django.contrib.auth.mixins import LoginRequiredMixin
+from rest_framework.decorators import detail_route, list_route
+from rest_framework.response import Response
+from rest_framework import (
+    exceptions, filters, mixins, pagination,
+    permissions, serializers, status, viewsets)
+from rest_framework.authtoken.models import Token
+
 
 from .models import User
+from .serializers import UserViewSetSerializer
 
 
-class UserDetailView(LoginRequiredMixin, DetailView):
+class UserViewSet(viewsets.ModelViewSet):
     model = User
-    # These next two lines tell the view to index lookups by username
-    slug_field = 'username'
-    slug_url_kwarg = 'username'
+    serializer_class = UserViewSetSerializer
 
+    def get_queryset(self):
+        return self.model.objects.all()
 
-class UserRedirectView(LoginRequiredMixin, RedirectView):
-    permanent = False
+    @list_route(methods=['post'])
+    def add(self, request, format=None):
+        data = request.data
+        uid = data.get('uid')
+        if uid:
+            token = Token.objects.filter(user__uid=uid)
+            if token.exists():
+                return Response(status=202, data={'token': token[0].key})
+            else:
+                serializer = self.serializer_class(data=data)
+                if serializer.is_valid():
+                    serializer.save()
+                    token = Token.objects.create(user=User.objects.get(uid=uid))
+                    return Response(status=202, data={'token': token.key})
+                else:
+                   return Response(status=400, data=serializer.errors)
+        return Response(status=400)
 
-    def get_redirect_url(self):
-        return reverse('users:detail',
-                       kwargs={'username': self.request.user.username})
-
-
-class UserUpdateView(LoginRequiredMixin, UpdateView):
-
-    fields = ['name', ]
-
-    # we already imported User in the view code above, remember?
-    model = User
-
-    # send the user back to their own page after a successful update
-    def get_success_url(self):
-        return reverse('users:detail',
-                       kwargs={'username': self.request.user.username})
-
-    def get_object(self):
-        # Only get the User record for the user making the request
-        return User.objects.get(username=self.request.user.username)
-
-
-class UserListView(LoginRequiredMixin, ListView):
-    model = User
-    # These next two lines tell the view to index lookups by username
-    slug_field = 'username'
-    slug_url_kwarg = 'username'
+    @detail_route(methods=['post'])
+    def update(self, request, pk):
+        data = request.data
+        secret_token = data.get('secret_token')
+        if secret_token:
+            qs = self.get_queryset()
+            user = qs.filter(pk=pk)
+            if user.exists():
+                user.update(**data)
+                return Response(status=204)
+        return Response(status=400)

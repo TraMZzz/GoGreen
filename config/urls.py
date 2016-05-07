@@ -5,19 +5,30 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.views.generic import TemplateView
 from django.views import defaults as default_views
 
+from go_green.users.views import UserViewSet
+from go_green.event.views import EventViewSet
+
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+
+router.register(
+    r'users', UserViewSet, base_name='users',
+)
+router.register(
+    r'events', EventViewSet, base_name='events',
+)
+
+
 urlpatterns = [
-    url(r'^$', TemplateView.as_view(template_name='pages/home.html'), name='home'),
-    url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'), name='about'),
+    url(r'^api/', include(router.urls)),
 
     # Django Admin, use {% url 'admin:index' %}
     url(settings.ADMIN_URL, include(admin.site.urls)),
 
     # User management
-    url(r'^users/', include('go_green.users.urls', namespace='users')),
-    url(r'^accounts/', include('allauth.urls')),
 
     # Your stuff: custom urls includes go here
 
