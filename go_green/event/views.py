@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 from django.shortcuts import get_object_or_404
 
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework import (
     exceptions, filters, mixins, pagination,
@@ -22,6 +22,21 @@ class EventViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return self.model.objects.all()
+
+    @list_route(methods=['post'])
+    def add(self, request, format=None):
+        data = request.data
+        secret_token = data.get('secret_token')
+        uid = data.get('uid')
+        user = get_object_or_404(User, uid=uid)
+        if not secret_token:
+            serializer = self.serializer_class(data=data)
+            if serializer.is_valid():
+                serializer.save(creator=user)
+                return Response(status=202)
+            else:
+                return Response(status=400, data=serializer.errors)
+        return Response(status=400)
 
     @detail_route(methods=['post'])
     def add_collaborators(self, request, pk):
