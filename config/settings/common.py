@@ -228,8 +228,6 @@ AUTH_USER_MODEL = 'users.User'
 # SLUGLIFIER
 AUTOSLUG_SLUGIFY_FUNCTION = 'slugify.slugify'
 
-DJANGO_SECRET_KEY = '1u@6od5=^!tf12=%3a12(b8oi$bjl5rk34a86c8$%!@qfk9fi='
-
 # Location of root django.contrib.admin URL, use {% url 'admin:index' %}
 ADMIN_URL = r'^admin/'
 
