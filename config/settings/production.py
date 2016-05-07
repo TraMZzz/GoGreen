@@ -112,13 +112,13 @@ STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 # EMAIL
 # ------------------------------------------------------------------------------
-DEFAULT_FROM_EMAIL = env('DJANGO_DEFAULT_FROM_EMAIL',
-                         default='go_green <noreply@gogreen.io>')
+# DEFAULT_FROM_EMAIL = env('DJANGO_DEFAULT_FROM_EMAIL',
+#                          default='go_green <noreply@gogreen.io>')
 # EMAIL_HOST_PASSWORD = env("SENDGRID_PASSWORD")
 # EMAIL_HOST_USER = env('SENDGRID_USERNAME')
-EMAIL_PORT = env.int("EMAIL_PORT", default=587)
-EMAIL_SUBJECT_PREFIX = env("EMAIL_SUBJECT_PREFIX", default='[go_green] ')
-EMAIL_USE_TLS = True
+# EMAIL_PORT = env.int("EMAIL_PORT", default=587)
+# EMAIL_SUBJECT_PREFIX = env("EMAIL_SUBJECT_PREFIX", default='[go_green] ')
+# EMAIL_USE_TLS = True
 # SERVER_EMAIL = EMAIL_HOST_USER
 
 
