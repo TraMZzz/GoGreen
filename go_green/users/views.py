@@ -30,13 +30,14 @@ class UserViewSet(viewsets.ModelViewSet):
         if uid:
             token = Token.objects.filter(user__uid=uid)
             if token.exists():
-                return Response(status=202, data={'token': token[0].key})
+                return Response(status=202, data={'token': token[0].key, 'id': token[0].user.id})
             else:
                 serializer = self.serializer_class(data=data)
                 if serializer.is_valid():
                     serializer.save()
+                    user = User.objects.get(uid=uid)
                     token = Token.objects.create(user=User.objects.get(uid=uid))
-                    return Response(status=202, data={'token': token.key})
+                    return Response(status=202, data={'token': token.key, 'id': user.id})
                 else:
                    return Response(status=400, data=serializer.errors)
         return Response(status=400)
