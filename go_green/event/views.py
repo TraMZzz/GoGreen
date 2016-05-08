@@ -20,7 +20,8 @@ class EventViewSet(viewsets.ModelViewSet):
     model = Event
     serializer_class = EventViewSetSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('creator', 'collaborators',)
+    filter_fields = ('creator', 'collaborators',
+                     'is_cleaned', 'pollution_level')
 
     def get_queryset(self):
         return self.model.objects.all()
