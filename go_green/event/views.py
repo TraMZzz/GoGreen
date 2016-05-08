@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 from django.shortcuts import get_object_or_404
 
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework import (
@@ -27,13 +28,12 @@ class EventViewSet(viewsets.ModelViewSet):
     def add(self, request, format=None):
         data = request.data
         secret_token = data.get('secret_token')
-        uid = data.get('uid')
-        user = get_object_or_404(User, uid=uid)
+        token = get_object_or_404(Token, key=secret_token)
         if secret_token:
             serializer = self.serializer_class(data=data)
             if serializer.is_valid():
-                serializer.save(creator=user)
-                return Response(status=202)
+                event = serializer.save(creator=token.user)
+                return Response(status=202, data={'event_id': event.id})
             else:
                 return Response(status=400, data=serializer.errors)
         return Response(status=400)
@@ -42,11 +42,10 @@ class EventViewSet(viewsets.ModelViewSet):
     def add_collaborators(self, request, pk):
         data = request.data
         secret_token = data.get('secret_token')
-        uid = data.get('uid')
-        user = get_object_or_404(User, uid=uid)
+        token = get_object_or_404(Token, key=secret_token)
         if secret_token:
             event = get_object_or_404(Event, pk=pk)
-            event.collaborators.add(user)
+            event.collaborators.add(token.user)
             return Response(status=200)
         return Response(status=400)
 
@@ -54,6 +53,7 @@ class EventViewSet(viewsets.ModelViewSet):
     def add_image_before(self, request, pk):
         data = request.data
         secret_token = data.get('secret_token')
+        token = get_object_or_404(Token, key=secret_token)
         if secret_token:
             event = get_object_or_404(Event, pk=pk)
             print request.POST
@@ -65,6 +65,7 @@ class EventViewSet(viewsets.ModelViewSet):
     def add_image_after(self, request, pk):
         data = request.data
         secret_token = data.get('secret_token')
+        token = get_object_or_404(Token, key=secret_token)
         if secret_token:
             event = get_object_or_404(Event, pk=pk)
             print request.POST
@@ -75,6 +76,7 @@ class EventViewSet(viewsets.ModelViewSet):
     def update(self, request, pk):
         data = request.data
         secret_token = data.get('secret_token')
+        token = get_object_or_404(Token, key=secret_token)
         if secret_token:
             data = request.data
             qs = self.get_queryset()
