@@ -29,7 +29,7 @@ class EventViewSet(viewsets.ModelViewSet):
         secret_token = data.get('secret_token')
         uid = data.get('uid')
         user = get_object_or_404(User, uid=uid)
-        if not secret_token:
+        if secret_token:
             serializer = self.serializer_class(data=data)
             if serializer.is_valid():
                 serializer.save(creator=user)
@@ -42,10 +42,11 @@ class EventViewSet(viewsets.ModelViewSet):
     def add_collaborators(self, request, pk):
         data = request.data
         secret_token = data.get('secret_token')
+        uid = data.get('uid')
+        user = get_object_or_404(User, uid=uid)
         if secret_token:
             event = get_object_or_404(Event, pk=pk)
-            print request.POST
-            print pk
+            event.collaborators.add(user)
             return Response(status=200)
         return Response(status=400)
 
