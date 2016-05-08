@@ -46,10 +46,11 @@ class UserViewSet(viewsets.ModelViewSet):
     def update(self, request, pk):
         data = request.data
         secret_token = data.get('secret_token')
+        token = get_object_or_404(Token, key=secret_token)
         if secret_token:
             qs = self.get_queryset()
             user = qs.filter(pk=pk)
-            if user.exists():
+            if user.exists() and user == token.user:
                 user.update(**data)
                 return Response(status=204)
         return Response(status=400)
