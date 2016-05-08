@@ -16,6 +16,18 @@ class Event(models.Model):
         ('bad', _('Extremely trashy')),
         ('extbad', _('Garbocalipse'))
     )
+    EQUIPMENT_CHOICES = (
+        ('me', _('Me')),
+        ('all', _('Every for himself'))
+    )
+    GARBAGE_CHOICES = (
+        ('yes', _('Yes')),
+        ('no', _('No'))
+    )
+    FOOD_CHOICES = (
+        ('yes', _('Yes')),
+        ('no', _('No'))
+    )
     creator = models.ForeignKey(User, verbose_name=_('Creator'),
                                 related_name='events')
     collaborators = models.ManyToManyField(User, _('collaborators'),
@@ -28,6 +40,13 @@ class Event(models.Model):
     start_time = models.DateTimeField(_('Start time'), blank=True, null=True)
     pollution_level = models.CharField(_('Pollution level'), max_length=6,
                                        choices=POLLUTION_CHOICES, default='normal')
+    equipment = models.CharField(_('Who provides equipment ?'), max_length=6,
+                                 choices=EQUIPMENT_CHOICES, default='all')
+    garbage = models.CharField(_('Is the garbage take-out arranged for ?'),
+                               max_length=6,
+                               choices=GARBAGE_CHOICES, default='no')
+    food = models.CharField(_('Is food provided?'), max_length=6,
+                            choices=FOOD_CHOICES, default='no')
 
     image_before = models.ManyToManyField(Image, _('Before'), db_table='event_images_before', blank=True)
     image_after = models.ManyToManyField(Image, _('After'), db_table='event_images_after', blank=True)

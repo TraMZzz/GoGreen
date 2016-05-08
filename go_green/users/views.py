@@ -35,11 +35,11 @@ class UserViewSet(viewsets.ModelViewSet):
                 serializer = self.serializer_class(data=data)
                 if serializer.is_valid():
                     serializer.save()
-                    user = User.objects.get(uid=uid)
-                    token = Token.objects.create(user=User.objects.get(uid=uid))
+                    user = get_object_or_404(User, uid=uid)
+                    token = Token.objects.create(user=user)
                     return Response(status=202, data={'token': token.key, 'id': user.id})
                 else:
-                   return Response(status=400, data=serializer.errors)
+                    return Response(status=400, data=serializer.errors)
         return Response(status=400)
 
     @detail_route(methods=['post'])

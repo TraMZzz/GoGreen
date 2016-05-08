@@ -85,7 +85,7 @@ class EventViewSet(viewsets.ModelViewSet):
             data = request.data
             qs = self.get_queryset()
             event = qs.filter(pk=pk)
-            if event.exists() and event.creator == token.user:
+            if event.exists() and event[0].creator == token.user:
                 event.update(**data)
                 return Response(status=204)
         return Response(status=400)
