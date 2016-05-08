@@ -13,6 +13,7 @@ from rest_framework import (
 from .models import Event
 from .serializers import EventViewSetSerializer
 from go_green.users.models import User
+from go_green.image.models import Image
 
 
 class EventViewSet(viewsets.ModelViewSet):
@@ -52,27 +53,30 @@ class EventViewSet(viewsets.ModelViewSet):
     @detail_route(methods=['post'])
     def add_image_before(self, request, pk):
         data = request.data
+        file = data.get('image')
         secret_token = data.get('secret_token')
         token = get_object_or_404(Token, key=secret_token)
         if secret_token:
             event = get_object_or_404(Event, pk=pk)
-            print request.POST
-            print pk
+            image = Image.objects.create(name=file.name, image=file)
+            event.image_before.add(image)
             return Response(status=200)
         return Response(status=400)
 
     @detail_route(methods=['post'])
     def add_image_after(self, request, pk):
         data = request.data
+        file = data.get('image')
         secret_token = data.get('secret_token')
         token = get_object_or_404(Token, key=secret_token)
         if secret_token:
             event = get_object_or_404(Event, pk=pk)
-            print request.POST
-            print pk
+            image = Image.objects.create(name=file.name, image=file)
+            event.image_before.add(image)
             return Response(status=200)
         return Response(status=400)
 
+    @detail_route(methods=['post'])
     def update(self, request, pk):
         data = request.data
         secret_token = data.get('secret_token')
