@@ -42,5 +42,6 @@ django-redis==4.4.2
 redis>=2.10.0
 
 
-
 # Your custom requirements go here
+geocoder==1.13
+geopy==1.11.0

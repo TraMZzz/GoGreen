@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+from geopy.geocoders import Nominatim
+
 from django.shortcuts import get_object_or_404
 
 from rest_framework.authtoken.models import Token
@@ -25,6 +27,29 @@ class EventViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return self.model.objects.all()
+
+    @list_route(methods=['post'])
+    def location(self, request):
+        print request.data
+        data = request.data
+        lat = data.get('lat')
+        lon = data.get('lon')
+        geolocator = Nominatim()
+        geo_location = geolocator.reverse('%s, %s' % (lat, lon))
+        if geo_location.address:
+            address = geo_location.raw['address']
+            return Response(status=200, data={
+                'city': address.get('city'),
+                'country': address.get('country'),
+                'house_number': address.get('house_number'),
+                'neighbourhood': address.get('neighbourhood'),
+                'road': address.get('road'),
+                'state': address.get('state'),
+                'suburb': address.get('suburb'),
+                }
+            )
+        return Response(status=400)
+
 
     @list_route(methods=['post'])
     def add(self, request, format=None):
