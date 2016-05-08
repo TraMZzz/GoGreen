@@ -30,7 +30,6 @@ class EventViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['post'])
     def location(self, request):
-        print request.data
         data = request.data
         lat = data.get('lat')
         lon = data.get('lon')
